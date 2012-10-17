@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$3" == "" ]; then
+	echo "Options:"
+	echo "[bssid] [essid] [channel] - All three parameters are required"
+	exit 1
+fi
+
+echo "BSSID=\"$1\"" >> ./cfg/target.conf
+echo "ESSID=\"$2\"" >> ./cfg/target.conf
+echo "CHANNEL=\"$3\"" >> ./cfg/target.conf
+
+. ./cfg/target.conf
+
+echo "Your target network is:"
+echo "  bssid: $BSSID"
+echo "  essid: $ESSID"
+echo "  channel: $CHANNEL"
+echo "Does this look right?"

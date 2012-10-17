@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -f ../cfg/target.conf ]; then
+	. ../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+
+. ../cfg/hardware.conf
+
+if [ -f $1 ] && [ "$1" != "" ]; then
+	airodump-ng -w $1 -b $BSSID psk*.cap
+else
+	echo "Options:"
+	echo "[filename] - Path to password list or hash database"
+	exit 1
+fi
+

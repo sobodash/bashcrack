@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
+. ./cfg/hardware.conf
+
+if [ "$WLAN2" != "" ]; then
+	echo "Testing injection using wlan to wlan..."
+	echo "Injecting from $WLAN..."
+	aireplay-ng -9 -i $WLAN2 $WLAN
+	echo ""
+	echo "Injecting from $WLAN2..."
+	aireplay-ng -9 -i $WLAN $WLAN2
+else
+	echo "Testing injection using wlan to arp..."
+	aireplay-ng -9 $WLAN
+fi

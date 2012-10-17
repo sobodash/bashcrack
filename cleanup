@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
+. ./cfg/hardware.conf
+
+echo "Purging crack logs..."
+rm /tmp/airodump* >>/dev/null 2>&1
+rm ./cfg/target.conf >>/dev/null 2>&1
+rm /tmp/fake-arp >>/dev/null 2>&1
+rm ./wep/attack/*.cap >>/dev/null 2>&1
+rm ./wep/attack/*.xor >>/dev/null 2>&1
+rm ./wep/flood/*.cap >>/dev/null 2>&1
+rm /tmp/psk*.cap >>/dev/null 2>&1
+
+echo "Switching wireless mode to managed..."
+ifconfig $WLAN down
+macchanger --permanent $WLAN
+iwconfig $WLAN mode managed
+ifconfig $WLAN -promisc
+#ifconfig $WLAN -allmulti
+ifconfig $WLAN multicast
+ifconfig $WLAN trailers
+ifconfig $WLAN up
+iwconfig $WLAN channel auto
+if [ "$WLAN2" != "" ]; then
+	ifconfig $WLAN2 down
+	iwconfig $WLAN2 mode managed
+	ifconfig $WLAN2 -promisc
+	ifconfig $WLAN2 multicast
+	ifconfig $WLAN2 trailers
+	ifconfig $WLAN2 up
+	iwconfig $WLAN2 channel auto
+fi
+
+echo "Attempting to restart network managers..."
+service $MANAGER start
+service avahi-daemon start
+
+echo "Done!"

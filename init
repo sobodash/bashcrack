@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
+. ./cfg/hardware.conf
+
+#PERM_HOST=`ifconfig | grep eth0 | awk '{print $5}'`
+
+echo "Shutting down network manager..."
+service $MANAGER stop
+service avahi-daemon stop
+killall -15 wpa_supplicant
+
+echo "Faking MAC address (00:11:22:33:44:55)..."
+ifconfig $WLAN down
+macchanger --mac $FAKE_HOST $WLAN
+
+echo "Setting up promiscuous mode..."
+iwconfig $WLAN mode monitor
+ifconfig $WLAN up
+if [ "$WLAN2" != "" ]; then
+	ifconfig $WLAN2 down
+	iwconfig $WLAN2 mode monitor
+	ifconfig $WLAN2 up
+fi
+
+echo "Done!"
+

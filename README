@@ -1,0 +1,45 @@
+bashcrack
+=========
+
+Follow the following flow order:
+
+1. Run 'init' to set up the system.
+
+2. Run 'scan' to get a list of nearby WEP points. You can only crack one that
+   has some amount of data traffic.
+
+3. Run 'target' and pass the BSSID, ESSID and CHANNEL of the target network
+   as the only paramters. For example:
+   ./target 00:11:DE:AD:BE:EF pagefault 6
+   The script will echo your input back. Make sure it is valid.
+
+4. Run 'capture' to begin collecting traffic. This script will test to make
+   sure your wireless device supports injection. If this step fails, your only
+   hope is to wait for enough traffic to pass on its own.
+
+5. Select a method of attack:
+
+   a. Run 'flood/arp' to attempt to catch a packet from the air and hurl it
+      back at the ARP. It may not work.
+
+   b. Try to engineer your own forged packet. To do this, you can try to run
+      either 'attack/fragmentation' or 'attack/chopchop'. One of these should
+      create a file with a name like 'fragment*.xor'. After this file has been
+      created, forge a packet using 'attack/forgepacket'. You can inject this
+      fake packet back into the ARP with 'flood/xor'.
+
+6. When 20,000 data packets have been collected, try running 'crack'. If there
+   are not enough packets to break the protection, just wait. Crack will try
+   again every 5,000 new packets.
+
+7. Jot down your password and run 'cleanup' to purge all the logs and reset
+   your wireless device.
+
+The files in 'cfg' control basic settings. These assume your wireless device
+is wlan0 and you are using the default 'network-manager' tool.
+
+If you are using wicd, edit './cfg/manager' and replace 'network-manager'
+with 'wicd'.
+
+If your network device is anything other than wlan0, edit './cfg/wireless'
+and replace 'wlan0' with the correct name of your device.

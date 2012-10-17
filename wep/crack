@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -f ../cfg/target.conf ]; then
+	. ../cfg/target.conf
+else
+	echo "Error: No target set!"
+	exit 1
+fi
+
+aircrack-ng -b $BSSID /tmp/airodump*.cap
