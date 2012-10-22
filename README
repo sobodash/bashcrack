@@ -43,3 +43,5 @@ with 'wicd'.
 
 If your network device is anything other than wlan0, edit './cfg/wireless'
 and replace 'wlan0' with the correct name of your device.
+
+
